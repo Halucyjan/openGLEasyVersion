@@ -51,42 +51,7 @@ int main() {
 
 	glViewport(0, 0, 800, 800);
 
-	
 
-	//create references to vertex array object and vertex buffer object
-	GLuint VAO, VBO, EBO;
-
-	//generate the VAO and VBO with only 1 object each
-	glGenVertexArrays(1, &VAO);
-	
-	glGenBuffers(1, &EBO);
-
-	//make the VAO cuurent vertex array object
-	glBindVertexArray(VAO);
-
-	
-	// introduce vertecies int VBO
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	
-
-	
-
-	//bind buffer VBO to 0 in casse we accidently modify it
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//the same with VAO
-	glBindVertexArray(0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-
-	//set background color
-	glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
-
-	// clean back buffor and assing new collor
-	glClear(GL_COLOR_BUFFER_BIT);
-	//change buffer
-	glfwSwapBuffers(window);
 
 	//game loop
 	while (!glfwWindowShouldClose(window)) {
