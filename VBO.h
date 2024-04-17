@@ -1,11 +1,10 @@
 #ifndef VBO_CLASS_H
 #define VBO_CLASS_H
 
-#include <glad/glad.h>
+#include<glad/glad.h>
 
-
-//Vertex Buffer Objects
-class VBO {
+class VBO
+{
 public:
 	// Reference ID of the Vertex Buffer Object
 	GLuint ID;
