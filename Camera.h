@@ -11,8 +11,7 @@
 
 #include"shaderClass.h"
 
-class Camera
-{
+class Camera{
 public:
 	// Stores the main vectors of the camera
 	glm::vec3 Position;
@@ -28,8 +27,10 @@ public:
 	int height;
 
 	// Adjust the speed of the camera and it's sensitivity when looking around
-	float speed = 0.1f;
+	float initSpeed = 0.01f;
+	float speed = initSpeed;
 	float sensitivity = 100.0f;
+	float shiftSpeed = 0.3f;
 
 	// Camera constructor to set up initial values
 	Camera(int width, int height, glm::vec3 position);

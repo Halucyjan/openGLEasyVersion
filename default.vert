@@ -25,8 +25,7 @@ uniform mat4 camMatrix;
 uniform mat4 model;
 
 
-void main()
-{
+void main(){
 	// calculates current position
 	crntPos = vec3(model * vec4(aPos, 1.0f));
 	// Outputs the positions/coordinates of all vertices

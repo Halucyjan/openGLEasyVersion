@@ -3,8 +3,7 @@
 
 #include<glad/glad.h>
 
-class VBO
-{
+class VBO{
 public:
 	// Reference ID of the Vertex Buffer Object
 	GLuint ID;
