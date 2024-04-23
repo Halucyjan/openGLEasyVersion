@@ -8,6 +8,26 @@ Model::Model(const char* file) {
 	data = getData();
 }
 
+void Model::loadMesh(unsigned int indMesh) {
+	unsigned int posAccInd		= JSON["meshes"][indMesh]["primitives"][0]["attributes"]["POSITION"];
+	unsigned int normalAccInd	= JSON["meshes"][indMesh]["primitives"][0]["attributes"]["NORMAL"];
+	unsigned int texAccInd		= JSON["meshes"][indMesh]["primitives"][0]["attributes"]["TEXCOORD_0"];
+	unsigned int indAccInd		= JSON["meshes"][indMesh]["primitives"][0]["indices"];
+
+	std::vector<float> posVec = getFloats(JSON["accessors"][posAccInd]);
+	std::vector<glm::vec3> positions = groupFloatsVec3(posVec);
+	std::vector<float> normalVec = getFloats(JSON["accessors"][normalAccInd]);
+	std::vector<glm::vec3> normals = groupFloatsVec3(normalVec);
+	std::vector<float> texVec = getFloats(JSON["accessors"][texAccInd]);
+	std::vector<glm::vec2> texUVs = groupFloatsVec2(texVec);
+
+	std::vector<Vertex> vertices = assembleVertices(positions, normals, texUVs);
+	std::vector<GLuint> indices = getIndices(JSON["accessors"][indAccInd]);
+	std::vector<Texture> textures = getTextures();
+
+	meshes.push_back(Mesh(vertices, indices, textures));
+}
+
 std::vector<unsigned char> Model::getData() {
 	std::string bytesText;
 	std::string uri = JSON["buffers"][0]["uri"];
@@ -114,7 +134,7 @@ std::vector<Texture> Model::getTextures() {
 				loadedTexName.push_back(texPath);
 			}
 			else if (texPath.find("metallicRoughness") != std::string::npos) {
-				Texture specular = Texture((fileDirectory + texPath).c_str(), "specular", unit++);
+				Texture specular = Texture((fileDirectory + texPath).c_str(), "specular", loadedTex.size());
 				textures.push_back(specular);
 				loadedTex.push_back(specular);
 				loadedTexName.push_back(texPath);
@@ -127,7 +147,7 @@ std::vector<Texture> Model::getTextures() {
 std::vector<Vertex> Model::assembleVertices(
 	std::vector<glm::vec3> positions,
 	std::vector<glm::vec3> normals,
-	std::vector<glm::vec3> texUVs
+	std::vector<glm::vec2> texUVs
 ) {
 	std::vector<Vertex> vertices;
 		for (int i = 0; i < positions.size(); i++) {
