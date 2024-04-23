@@ -6,6 +6,14 @@ Model::Model(const char* file) {
 
 	Model::file = file;
 	data = getData();
+
+	traverseNode(0);
+}
+
+void Model::Draw(Shader& shader, Camera& camera) {
+	for (unsigned int i = 0; i < meshes.size(); i++) {
+		meshes[i].Mesh::Draw(shader, camera, matricesMeshes[i]);
+	}
 }
 
 void Model::loadMesh(unsigned int indMesh) {
@@ -26,6 +34,66 @@ void Model::loadMesh(unsigned int indMesh) {
 	std::vector<Texture> textures = getTextures();
 
 	meshes.push_back(Mesh(vertices, indices, textures));
+}
+
+void Model::traverseNode(unsigned int nextNode, glm::mat4 matrix) {
+	json node = JSON["nodes"][nextNode];
+
+	glm::vec3 translation = glm::vec3(0.0f, 0.0f, 0.0f);
+	if (node.find("translation") != node.end()) {
+		float transValues[3];
+		for (unsigned int i = 0; i < node["translation"].size(); i++)
+			transValues[i] = (node["translation"][i]);
+		translation = glm::make_vec3(transValues);
+	}
+	glm::quat rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+	if (node.find("rotation") != node.end()) {
+		float rotValues[4] = {
+			node["rotation"][3],
+			node["rotation"][0],
+			node["rotation"][1],
+			node["rotation"][2]
+		};
+		rotation = glm::make_quat(rotValues);
+	}
+	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
+	if (node.find("scale") != node.end()) {
+		float scaleValues[3];
+		for (unsigned int i = 0; i < node["scale"].size(); i++)
+			scaleValues[i] = (node["scale"][i]);
+		scale = glm::make_vec3(scaleValues);
+	}
+	glm::mat4 matNode = glm::mat4(1.0f);
+	if (node.find("matrix") != node.end()) {
+		float matValues[16];
+		for (unsigned int i = 0; i < node["matrix"].size(); i++)
+			matValues[i] = (node["matrix"][i]);
+		matNode = glm::make_mat4(matValues);
+	}
+
+	glm::mat4 trans	= glm::mat4(1.0f);
+	glm::mat4 rot	= glm::mat4(1.0f);
+	glm::mat4 sca	= glm::mat4(1.0f);
+
+	trans = glm::translate(trans, translation);
+	rot = glm::mat4_cast(rotation);
+	sca = glm::scale(sca, scale);
+
+	glm::mat4 matNextNode = matrix * matNode * trans * rot * sca;
+
+	if (node.find("mesh") != node.end()) {
+		translationsMeshes.push_back(translation);
+		rotationsMeshes.push_back(rotation);
+		scalesMeshes.push_back(scale);
+		matricesMeshes.push_back(matNextNode);
+
+		loadMesh(node["mesh"]);
+	}
+
+	if (node.find("children") != node.end()) {
+		for (unsigned int i = 0; i < node["children"].size(); i++)
+			traverseNode(node["children"][i], matNextNode);
+	}
 }
 
 std::vector<unsigned char> Model::getData() {
