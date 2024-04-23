@@ -88,7 +88,43 @@ std::vector<GLuint> Model::getIndices(json accessor) {
 	return indices;
 }
 
-std::vector<Vertex> assembleVertices(
+std::vector<Texture> Model::getTextures() {
+	std::vector<Texture> textures;
+
+	std::string fileStr = std::string(file);
+	std::string fileDirectory = fileStr.substr(0, fileStr.find_last_of('/') + 1);
+
+	for (unsigned int i = 0; i < JSON["images"].size(); i++) {
+		std::string texPath = JSON["images"][i]["uri"];
+
+		bool skip = false;
+		for (unsigned int j = 0; j < loadedTexName.size(); j++) {
+			if (loadedTexName[j] == texPath) {
+				textures.push_back(loadedTex[j]);
+				skip = true;
+				break;
+			}
+		}
+
+		if (!skip) {
+			if (texPath.find("baseColor") != std::string::npos) {
+				Texture diffuse = Texture((fileDirectory + texPath).c_str(), "diffuse", loadedTex.size());
+				textures.push_back(diffuse);
+				loadedTex.push_back(diffuse);
+				loadedTexName.push_back(texPath);
+			}
+			else if (texPath.find("metallicRoughness") != std::string::npos) {
+				Texture specular = Texture((fileDirectory + texPath).c_str(), "specular", unit++);
+				textures.push_back(specular);
+				loadedTex.push_back(specular);
+				loadedTexName.push_back(texPath);
+			}
+		}
+	}
+	return textures;
+}
+
+std::vector<Vertex> Model::assembleVertices(
 	std::vector<glm::vec3> positions,
 	std::vector<glm::vec3> normals,
 	std::vector<glm::vec3> texUVs
