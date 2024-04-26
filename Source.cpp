@@ -1,12 +1,9 @@
 #include"Model.h"
 
-
 const unsigned int width = 800;
 const unsigned int height = 800;
 
-
-int main()
-{
+int main(){
 	// Initialize GLFW
 	glfwInit();
 
@@ -18,11 +15,10 @@ int main()
 	// So that means we only have the modern functions
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	// Create a GLFWwindow object of 800 by 800 pixels, naming it "YoutubeOpenGL"
-	GLFWwindow* window = glfwCreateWindow(width, height, "YoutubeOpenGL", NULL, NULL);
+	// Create a GLFWwindow object of 800 by 800 pixels, naming it "OpenGL"
+	GLFWwindow* window = glfwCreateWindow(width, height, "OpenGL", NULL, NULL);
 	// Error check if the window fails to create
-	if (window == NULL)
-	{
+	if (window == NULL){
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1;
@@ -35,10 +31,6 @@ int main()
 	// Specify the viewport of OpenGL in the Window
 	// In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
 	glViewport(0, 0, width, height);
-
-
-
-
 
 	// Generates Shader object using shaders default.vert and default.frag
 	Shader shaderProgram("default.vert", "default.frag");
@@ -54,9 +46,6 @@ int main()
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
 
-
-
-
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
 
@@ -65,11 +54,11 @@ int main()
 
 	// Load in a model
 
-	Model model("models/sword/scene.gltf");
+	Model trees("models/trees/scene.gltf");
+	Model ground("models/ground/scene.gltf");
 
 	// Main while loop
-	while (!glfwWindowShouldClose(window))
-	{
+	while (!glfwWindowShouldClose(window)){
 		// Specify the color of the background
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 		// Clean the back buffer and depth buffer
@@ -81,7 +70,8 @@ int main()
 		camera.updateMatrix(45.0f, 0.1f, 100.0f);
 
 		// Draw a model
-		model.Draw(shaderProgram, camera);
+		trees.Draw(shaderProgram, camera);
+		ground.Draw(shaderProgram, camera);
 
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
@@ -89,13 +79,12 @@ int main()
 		glfwPollEvents();
 	}
 
-
-
 	// Delete all the objects we've created
 	shaderProgram.Delete();
 	// Delete window before ending the program
 	glfwDestroyWindow(window);
 	// Terminate GLFW before ending the program
 	glfwTerminate();
+
 	return 0;
 }
