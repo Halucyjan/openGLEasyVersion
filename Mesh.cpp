@@ -58,9 +58,15 @@ void Mesh::Draw(
 	glUniform3f(glGetUniformLocation(shader.ID, "camPos"), camera.Position.x, camera.Position.y, camera.Position.z);
 	camera.Matrix(shader, "camMatrix");
 
+	//	initialize matrices
 	glm::mat4 trans = glm::mat4(1.0f);
 	glm::mat4 rot = glm::mat4(1.0f);
 	glm::mat4 sca = glm::mat4(1.0f);
+
+	//	transform matricies to correct form
+	trans = glm::translate(trans, translation);
+	rot = glm::mat4_cast(rotation);
+	sca = glm::scale(sca, scale);
 
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "translation"), 1, GL_FALSE, glm::value_ptr(trans));
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "rotation"), 1, GL_FALSE, glm::value_ptr(rot));
